@@ -58,16 +58,15 @@ public class MainActivity extends Activity {
 		OpenGraphAction action = GraphObject.Factory.create(OpenGraphAction.class);
 		action.setProperty("object", object);
 
-	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    options.inJustDecodeBounds = false;
-	    Bitmap bitmap =  BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher, options);
-
+	    	final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = false;
+		Bitmap bitmap =  getBitmapFromAsset(this.getApplicationContext(), "file.jpg");
 		List<Bitmap> images = new ArrayList<Bitmap>();
 		images.add(bitmap);
 
 		FacebookDialog shareDialog = new FacebookDialog.OpenGraphActionDialogBuilder(this, action, "namespaceapp:action", "object")
-		        .setImageAttachmentsForAction(images, true)
-		        .build();
+		.setImageAttachmentsForObject("object", images, true)
+		.build();
 
 		uiHelper.trackPendingDialogCall(shareDialog.present());
 
@@ -113,5 +112,23 @@ public class MainActivity extends Activity {
 	public void onDestroy() {
 		super.onDestroy();
 		uiHelper.onDestroy();
+	}
+	
+	private Bitmap getBitmapFromAsset(Context context, String filePath) {
+		if(context == null || filePath == null || filePath.isEmpty())
+			return null;
+		
+	    AssetManager assetManager = context.getAssets();
+
+	    InputStream istr;
+	    Bitmap bitmap = null;
+	    try {
+	        istr = assetManager.open(filePath);
+	        bitmap = BitmapFactory.decodeStream(istr);
+	    } catch (IOException e) {
+	    	e.printStackTrace();
+	    }
+
+	    return bitmap;
 	}
 }
